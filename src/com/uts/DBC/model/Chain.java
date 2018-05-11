@@ -17,7 +17,14 @@ public class Chain {
 		blocks.add(block);
 	}
 	
-	public int getLength() {
+	public int getBlockLength() {
 		return blocks.size();
+	}
+	public int getTransactionLength() {
+		int sum = 0;
+		for(int i = 0; i < blocks.size(); i++) {
+			sum += blocks.get(i).getBlockSize();
+		}
+		return sum;
 	}
 }

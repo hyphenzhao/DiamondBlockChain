@@ -8,6 +8,7 @@ import java.security.spec.X509EncodedKeySpec;
 
 import com.uts.DBC.common.HashUtils;
 import com.uts.DBC.common.RSAKeyTools;
+import com.uts.DBC.common.VerificationTools;
 import com.uts.DBC.model.Transaction;
 
 import java.util.ArrayList;
@@ -45,5 +46,11 @@ public class main {
         		sender, receiver, diamonds, preIndexs, preHashs, privateKey, publicKey
         		);
         System.out.println(tra);
+        if(VerificationTools.verifyTransactionSignature(tra)) {
+        	System.out.println("Transaction is valid.");
+        } else {
+        	System.out.println("Transaction is invalid.");
+        }
+        
 	}
 }
