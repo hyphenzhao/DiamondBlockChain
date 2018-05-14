@@ -10,7 +10,7 @@ import com.uts.DBC.common.VerificationTools;
 import com.uts.DBC.exceptions.TransactionInvalidException;
 
 public class Block {
-	private ArrayList<Transaction> transactions;
+	private ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 	private int index;
 	private String preHash;
 	private long proof;
@@ -35,7 +35,6 @@ public class Block {
 		}
 		Transaction reward = new Transaction(
 				"0", winer, diamonds, 
-				new ArrayList<Integer>(),
 				new ArrayList<String>(),
 				privateKey,publicKey
 				);
@@ -49,6 +48,74 @@ public class Block {
 			text += transactions.get(i).toBlock();
 		}
 		this.hash = HashUtils.bytesToHex(HashUtils.calculateSha256(text));
+	}
+	
+	public Block(String line) {
+		int pos = line.indexOf("}");
+		String preProcessed = line.substring(1, pos);
+		String[] lines = preProcessed.split("#");
+		for(int i = 0; i < lines.length; i++) {
+			String[] phases = lines[i].split("=");
+			switch(phases[0]) {
+			case "Block":
+				this.index = Integer.parseInt(phases[1]);
+				break;
+			case "PreviousHash":
+				this.preHash = phases[1];
+				break;
+			case "Proof":
+				this.proof = Long.parseLong(phases[1]);
+				break;
+			case "TimeStamp":
+				this.timestamp = Long.parseLong(phases[1]);
+				break;
+			case "Hash":
+				this.hash = phases[1];
+				break;
+			case "Transactions":
+				String[] traStrs = phases[1].split("!");
+				for(int j = 0; j < traStrs.length; j++) {
+					Transaction newTra = new Transaction(traStrs[j]);
+					this.transactions.add(newTra);
+				}
+				break;
+			}
+		}
+	}
+	
+	public String toChain() {
+		String result = "";
+		result += "{";
+		result += "Block=" + this.index + "#";
+		result += "PreviousHash=" + this.preHash + "#";
+		result += "Proof=" + this.proof + "#";
+		result += "TimeStamp=" + this.timestamp + "#";
+		result += "Hash=" + this.hash + "#";
+		result += "Transactions=";
+		for(int i = 0; i < this.transactions.size(); i++) {
+			result += this.transactions.get(i).toBlock() + "!";
+		}
+		result += "#";
+		result += "}";
+		return result;
+	}
+	
+	@Override
+	public String toString() {
+		String result = "";
+		result += "{\n";
+		result += "Block=" + this.index + "#\n";
+		result += "PreviousHash=" + this.preHash + "#\n";
+		result += "Proof=" + this.proof + "#\n";
+		result += "TimeStamp=" + this.timestamp + "#\n";
+		result += "Hash=" + this.hash + "#\n";
+		result += "Transactions=";
+		for(int i = 0; i < this.transactions.size(); i++) {
+			result += this.transactions.get(i).toBlock() + "!\n";
+		}
+		result += "#\n";
+		result += "}\n";
+		return result;
 	}
 	public String getHash() {
 		return hash;
@@ -93,5 +160,9 @@ public class Block {
 	
 	public int getBlockSize() {
 		return this.transactions.size();
+	}
+	
+	public Transaction getTransaction(int i) {
+		return this.transactions.get(i);
 	}
 }

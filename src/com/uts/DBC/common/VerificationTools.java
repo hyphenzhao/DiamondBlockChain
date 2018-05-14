@@ -1,10 +1,13 @@
 package com.uts.DBC.common;
 
 import java.security.Key;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.crypto.Cipher;
 
+import com.uts.DBC.model.Block;
+import com.uts.DBC.model.Chain;
 import com.uts.DBC.model.Transaction;
 
 public class VerificationTools {
@@ -23,5 +26,31 @@ public class VerificationTools {
 			e.printStackTrace();
 		}
 		return false;
+	}
+	public static boolean[] getAccountBalance(String accountAddr, Chain blockChain) {
+		int sum = 50 * blockChain.getBlockLength();
+		boolean[] diamonds = new boolean[sum];
+		for(int i = 0; i < diamonds.length; i++) 
+			diamonds[i] = false;
+		for(int i = 0; i < blockChain.getBlockLength(); i++) {
+			Block cBlock = blockChain.getBlock(i);
+			for(int j = 0; j < cBlock.getBlockSize(); j++) {
+				Transaction cTransaction = cBlock.getTransaction(j);
+				if(accountAddr.equals(cTransaction.getReceiver())) {
+					ArrayList<String> trades = cTransaction.getDiamonds();
+					for(int k = 0; k < trades.size(); k++) {
+						int diaNo = Integer.parseInt(trades.get(k));
+						diamonds[diaNo] = true;
+					}
+				}else if(accountAddr.equals(cTransaction.getSender())) {
+					ArrayList<String> trades = cTransaction.getDiamonds();
+					for(int k = 0; k < trades.size(); k++) {
+						int diaNo = Integer.parseInt(trades.get(k));
+						diamonds[diaNo] = true;
+					}
+				}
+			}
+		}
+		return diamonds;
 	}
 }
