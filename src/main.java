@@ -11,6 +11,10 @@ import com.uts.DBC.model.Transaction;
 import com.uts.DBC.model.TransactionList;
 import com.uts.DBC.p2p.BlockchainServer;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Base64;
 
@@ -31,10 +35,23 @@ public class Main {
 			Constants.CURRENTTRANSACTIONS = new TransactionList();
 		}
 		Constants.IPBOOK = new ArrayList<String>();
-		Constants.IPBOOK.add("localhost");
 		Constants.IPBOOK.add("10.16.6.218");
 		Thread serverThread = new Thread(new BlockchainServer());
 		serverThread.start();
+		for(int i = 0; i < Constants.IPBOOK.size(); i++) {
+			try {
+				Socket initSocket = new Socket(Constants.IPBOOK.get(i), Constants.PORT);
+				OutputStream out = initSocket.getOutputStream();
+				ObjectOutputStream obj = new ObjectOutputStream(out);
+				obj.flush();
+				obj.writeObject("GET");
+				initSocket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 	}
 	public static void printBasicInformation() {
 		System.out.println("Block Chain Status:");
