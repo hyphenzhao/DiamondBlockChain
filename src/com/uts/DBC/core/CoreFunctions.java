@@ -23,6 +23,25 @@ public class CoreFunctions {
 		case "TRANSACTIONS":
 			resolveTransactionConflicts(new TransactionList(message));
 			break;
+		case "BOTH":
+			boolean block = true;
+			ArrayList<String> blockchain = new ArrayList<String>();
+			ArrayList<String> transactions = new ArrayList<String>();
+			for(int i = 0; i < message.size(); i++) {
+				String tmp = message.get(i);
+				if(block) {
+					if(tmp.equals("=========")) {
+						block =false;
+					} else {
+						blockchain.add(tmp);
+					}
+				}else {
+					transactions.add(tmp);
+				}
+			}
+			resolveBlockchainConficts(new Chain(blockchain));
+			resolveTransactionConflicts(new TransactionList(transactions));
+			break;
 		}
 	}
 	public static void resolveBlockchainConficts(Chain blockchain) {
@@ -81,6 +100,17 @@ public class CoreFunctions {
 					break;
 				case "transactions":
 					obj.writeObject("TRANSACTIONS");
+					for(int j = 0; j < Constants.CURRENTTRANSACTIONS.getLength(); j++) {
+						obj.writeObject(Constants.CURRENTTRANSACTIONS.getTransaction(j).toBlock());
+					}
+					obj.writeObject(Constants.SESSION_END);
+					break;
+				case "both":
+					obj.writeObject("BOTH");
+					for(int j = 0; j < Constants.BLOCKCHAIN.getBlockLength(); j++) {
+						obj.writeObject(Constants.BLOCKCHAIN.getBlock(j).toChain());
+					}
+					obj.writeObject("=========");
 					for(int j = 0; j < Constants.CURRENTTRANSACTIONS.getLength(); j++) {
 						obj.writeObject(Constants.CURRENTTRANSACTIONS.getTransaction(j).toBlock());
 					}

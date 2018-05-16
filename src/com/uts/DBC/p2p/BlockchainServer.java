@@ -22,8 +22,7 @@ public class BlockchainServer implements Runnable {
 			String messageType = (String)objIn.readObject();
 			System.out.println("Server: " + messageType);
 			if(messageType.equals("GET")) {
-				CoreFunctions.multicast("blockchain");
-				CoreFunctions.multicast("transactions");
+				CoreFunctions.multicast("both");
 			} else {
 				String message = "";
 				ArrayList<String> result = new ArrayList<String>();
@@ -42,6 +41,9 @@ public class BlockchainServer implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
