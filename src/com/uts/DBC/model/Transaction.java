@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import com.uts.DBC.common.HashUtils;
 import com.uts.DBC.common.RSAKeyTools;
 
-public class Transaction {
+public class Transaction implements Comparable{
 	private long timestamp;
 	private String sender;
 	private String receiver;
@@ -222,5 +222,12 @@ public class Transaction {
 	}
 	public void pushPreHash(String preHash) {
 		preHashs.add(preHash);
+	}
+
+	@Override
+	public int compareTo(Object o) {
+		Transaction other = (Transaction) o;
+		int result = (int)(this.timestamp - other.timestamp);
+		return result;
 	}
 }

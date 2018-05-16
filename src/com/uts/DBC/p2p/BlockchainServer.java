@@ -5,8 +5,10 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import com.uts.DBC.common.Constants;
+import com.uts.DBC.core.CoreFunctions;
 
 public class BlockchainServer implements Runnable {
 	public void runServer() {
@@ -19,13 +21,21 @@ public class BlockchainServer implements Runnable {
 			ObjectInputStream objIn = new ObjectInputStream(conIn);
 			String messageType = (String)objIn.readObject();
 			System.out.println("Server: " + messageType);
-			String message = "";
-			do {
-				if(!message.equals(""))
-					System.out.println(message);
-				message = (String) objIn.readObject();
-				System.out.println("Server: " + message);
-			}while(!message.equals(Constants.SESSION_END));
+			if(messageType.equals("GET")) {
+				CoreFunctions.multicast("blockchain");
+				CoreFunctions.multicast("transactions");
+			} else {
+				String message = "";
+				ArrayList<String> result = new ArrayList<String>();
+				do {
+					message = (String) objIn.readObject();
+					System.out.println("Server: " + message);
+					if(!message.equals(Constants.SESSION_END)) {
+						result.add(message);
+					}
+				}while(!message.equals(Constants.SESSION_END));
+				CoreFunctions.resolveServerInput(messageType, result);
+			}
 			socket.close();
 			server.close();
 		} catch (IOException e) {

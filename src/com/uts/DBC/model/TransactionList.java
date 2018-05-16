@@ -1,6 +1,7 @@
 package com.uts.DBC.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class TransactionList {
 	ArrayList<Transaction> transactions = new ArrayList<Transaction>();
@@ -13,6 +14,11 @@ public class TransactionList {
 			this.transactions.add(new Transaction(tras.get(i)));
 		}
 	}
+	
+	public void sort() {
+		Collections.sort(transactions);
+	}
+	
 	public int getLength() {
 		return this.transactions.size();
 	}
@@ -24,6 +30,7 @@ public class TransactionList {
 	}
 	public void pushTransaction(Transaction tra) {
 		this.transactions.add(tra);
+		this.sort();
 	}
 	public ArrayList<Transaction> getTransactions() {
 		return transactions;

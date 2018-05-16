@@ -1,15 +1,3 @@
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.net.Socket;
-import java.security.Key;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.X509EncodedKeySpec;
-
 import com.uts.DBC.common.Constants;
 import com.uts.DBC.common.HashUtils;
 import com.uts.DBC.common.RSAKeyTools;
@@ -44,6 +32,7 @@ public class Main {
 		}
 		Constants.IPBOOK = new ArrayList<String>();
 		Constants.IPBOOK.add("localhost");
+		Constants.IPBOOK.add("10.16.6.218");
 		Thread serverThread = new Thread(new BlockchainServer());
 		serverThread.start();
 	}

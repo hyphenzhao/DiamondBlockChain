@@ -10,9 +10,59 @@ import com.uts.DBC.common.Constants;
 import com.uts.DBC.common.VerificationTools;
 import com.uts.DBC.data.FileIO;
 import com.uts.DBC.model.Block;
+import com.uts.DBC.model.Chain;
 import com.uts.DBC.model.Transaction;
+import com.uts.DBC.model.TransactionList;
 
 public class CoreFunctions {
+	public static void resolveServerInput(String messageType, ArrayList<String> message) {
+		switch(messageType) {
+		case "BLOCKCHAIN":
+			resolveBlockchainConficts(new Chain(message));
+			break;
+		case "TRANSACTIONS":
+			resolveTransactionConflicts(new TransactionList(message));
+			break;
+		}
+	}
+	public static void resolveBlockchainConficts(Chain blockchain) {
+		if(Constants.BLOCKCHAIN.getBlockLength() < blockchain.getBlockLength()) {
+			Constants.BLOCKCHAIN = blockchain;
+		} else if(Constants.BLOCKCHAIN.getBlockLength() == blockchain.getBlockLength()) {
+			for(int i = 0; i < blockchain.getBlockLength(); i++) {
+				Block ob = Constants.BLOCKCHAIN.getBlock(i);
+				Block nb = blockchain.getBlock(i);
+				if(nb.getTimestamp() < ob.getTimestamp()) {
+					Constants.BLOCKCHAIN = blockchain;
+					break;
+				}
+			}
+		}
+	}
+	public static void resolveTransactionConflicts(TransactionList transactions) {
+		for(int i = 0; i < transactions.getLength(); i++) {
+			Transaction tra = transactions.getTransaction(i);
+			if(!Constants.CURRENTTRANSACTIONS.getTransactions().contains(tra)) {
+				if(!VerificationTools.verifyTransactionSignature(tra))
+					continue;
+				boolean[] balance = 
+						VerificationTools.getAccountBalance(tra.getSender(), 
+								Constants.BLOCKCHAIN, 
+								Constants.CURRENTTRANSACTIONS);
+				ArrayList<String> dias = tra.getDiamonds();
+				boolean sufficient = true;
+				for(int j = 0; j < dias.size(); j++) {
+					if(!balance[Integer.parseInt(dias.get(j))]) {
+						sufficient = false;
+						break;
+					}
+						
+				}
+				if(!sufficient) continue;
+				Constants.CURRENTTRANSACTIONS.pushTransaction(tra);
+			}
+		}
+	}
 	public static void multicast(String type) {
 		for(int i = 0; i < Constants.IPBOOK.size(); i++) {
 			String ip = Constants.IPBOOK.get(i);
