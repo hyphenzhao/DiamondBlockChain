@@ -14,6 +14,7 @@ import com.uts.DBC.p2p.BlockchainServer;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -35,12 +36,15 @@ public class Main {
 			Constants.CURRENTTRANSACTIONS = new TransactionList();
 		}
 		Constants.IPBOOK = new ArrayList<String>();
-		Constants.IPBOOK.add("10.16.6.218");
+		Constants.IPBOOK.add("192.168.0.110");
 		Thread serverThread = new Thread(new BlockchainServer());
 		serverThread.start();
 		for(int i = 0; i < Constants.IPBOOK.size(); i++) {
 			try {
-				Socket initSocket = new Socket(Constants.IPBOOK.get(i), Constants.PORT);
+				Socket initSocket = new Socket();
+				initSocket.connect(
+						new InetSocketAddress(Constants.IPBOOK.get(i), Constants.PORT), 
+						1000);
 				OutputStream out = initSocket.getOutputStream();
 				ObjectOutputStream obj = new ObjectOutputStream(out);
 				obj.flush();

@@ -3,6 +3,7 @@ package com.uts.DBC.core;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -86,7 +87,11 @@ public class CoreFunctions {
 		for(int i = 0; i < Constants.IPBOOK.size(); i++) {
 			String ip = Constants.IPBOOK.get(i);
 			try {
-				Socket socket = new Socket(ip, Constants.PORT);
+				Socket socket = new Socket();
+				socket.connect(
+						new InetSocketAddress(ip, Constants.PORT),
+						1000
+						);
 				OutputStream out = socket.getOutputStream();
 				ObjectOutputStream obj = new ObjectOutputStream(out);
 				obj.flush();

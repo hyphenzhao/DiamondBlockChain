@@ -99,7 +99,7 @@ public class MainWindow extends JFrame{
 		JPanel addressPanel = new JPanel(false);
 		addressPanel.setLayout(new FlowLayout());
 		JLabel sendToLabel = new JLabel("Check balance of address: ");
-		JTextField addressField = new JTextField(20);
+		JTextField addressField = new JTextField(40);
 		addressPanel.add(sendToLabel);
 		addressPanel.add(addressField);
 		panel.add(addressPanel);
