@@ -9,6 +9,7 @@ import javax.crypto.Cipher;
 import com.uts.DBC.model.Block;
 import com.uts.DBC.model.Chain;
 import com.uts.DBC.model.Transaction;
+import com.uts.DBC.model.TransactionList;
 
 public class VerificationTools {
 	public static boolean verifyTransactionSignature(Transaction transaction) {
@@ -27,8 +28,13 @@ public class VerificationTools {
 		}
 		return false;
 	}
-	public static boolean[] getAccountBalance(String accountAddr, Chain blockChain) {
-		int sum = 50 * blockChain.getBlockLength();
+	public static boolean verifyAddress(String publicKey, String address) {
+		String sampleAddr = HashUtils.bytesToHex(HashUtils.calculateSha256(publicKey));
+		if(address.equals(sampleAddr)) return true;
+		return false;
+	}
+	public static boolean[] getAccountBalance(String accountAddr, Chain blockChain, TransactionList transactions) {
+		int sum = 50 * blockChain.getBlockLength() + 1;
 		boolean[] diamonds = new boolean[sum];
 		for(int i = 0; i < diamonds.length; i++) 
 			diamonds[i] = false;
@@ -46,8 +52,24 @@ public class VerificationTools {
 					ArrayList<String> trades = cTransaction.getDiamonds();
 					for(int k = 0; k < trades.size(); k++) {
 						int diaNo = Integer.parseInt(trades.get(k));
-						diamonds[diaNo] = true;
+						diamonds[diaNo] = false;
 					}
+				}
+			}
+		}
+		for(int i = 0; i < transactions.getLength(); i++) {
+			Transaction cTransaction = transactions.getTransaction(i);
+			if(accountAddr.equals(cTransaction.getReceiver())) {
+				ArrayList<String> trades = cTransaction.getDiamonds();
+				for(int k = 0; k < trades.size(); k++) {
+					int diaNo = Integer.parseInt(trades.get(k));
+					diamonds[diaNo] = true;
+				}
+			}else if(accountAddr.equals(cTransaction.getSender())) {
+				ArrayList<String> trades = cTransaction.getDiamonds();
+				for(int k = 0; k < trades.size(); k++) {
+					int diaNo = Integer.parseInt(trades.get(k));
+					diamonds[diaNo] = false;
 				}
 			}
 		}

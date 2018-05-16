@@ -28,7 +28,8 @@ public class FileIO {
 
 	            while ((lineText = bufferedReader.readLine()) != null)
 	            {
-	                rawTextLines.add(lineText);
+	            	if(lineText != "")
+	            		rawTextLines.add(lineText);
 	            }
 	            bufferedReader.close();
 	            inputStream.close();
@@ -63,17 +64,7 @@ public class FileIO {
 			File file = new File(this.filename);
 			if (file.isFile() && file.exists())
 	        {
-	            InputStreamReader inputStream = new InputStreamReader(
-	                    new FileInputStream(file));
-	            BufferedReader bufferedReader = new BufferedReader(inputStream);
-	            String lineText = null;
-
-	            while ((lineText = bufferedReader.readLine()) != null)
-	            {
-	                rawTextLines.add(lineText);
-	            }
-	            bufferedReader.close();
-	            inputStream.close();
+	            return false;
 	        } else {
 	        	return true;
 	        }

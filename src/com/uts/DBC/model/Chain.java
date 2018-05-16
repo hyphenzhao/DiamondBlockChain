@@ -23,7 +23,11 @@ public class Chain {
 		}
 		return result;
 	}
-
+	
+	public boolean isEmpty() {
+		return this.blocks.isEmpty();
+	}
+	
 	public ArrayList<Block> getBlocks() {
 		return blocks;
 	}
