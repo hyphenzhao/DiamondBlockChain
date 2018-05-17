@@ -62,7 +62,9 @@ public class Main {
 					  new InputStreamReader(con.getInputStream()));
 			String inputLine;
 			while ((inputLine = in.readLine()) != null) {
-				Constants.IPBOOK.add(inputLine);
+				if(!inputLine.equals("Connection failed.") &&
+						!inputLine.equals(ipv4))
+				Constants.IPBOOK.add(inputLine.replace('-', '.'));
 				System.out.println("HTTP GET:" + inputLine);
 			}
 			in.close();
