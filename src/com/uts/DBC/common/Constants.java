@@ -17,4 +17,5 @@ public class Constants {
 	public static int PORT = 5000;
 	public static ArrayList<String> IPBOOK;
 	public static String SESSION_END = "SESSION END.";
+	public static String PUBIP = "13.211.117.39";
 }

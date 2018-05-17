@@ -11,16 +11,25 @@ import com.uts.DBC.model.Transaction;
 import com.uts.DBC.model.TransactionList;
 import com.uts.DBC.p2p.BlockchainServer;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.Inet4Address;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Base64;
 
 public class Main {
 	public static void init() {
+		/*
+		 * Read blockchain and transactions list from file.
+		 * */
 		FileIO blockChainFile = new FileIO(Constants.BLOCKFILENAME);
 		FileIO transactionFile = new FileIO(Constants.TRANSACTIONFILENAME);
 		if(!blockChainFile.isEmptyFile()) {
@@ -35,10 +44,46 @@ public class Main {
 		} else {
 			Constants.CURRENTTRANSACTIONS = new TransactionList();
 		}
+		
+		
+		/*
+		 * Try to get a ip list from remote server with public ip
+		 * Register this node online
+		 * */
 		Constants.IPBOOK = new ArrayList<String>();
-		Constants.IPBOOK.add("192.168.0.110");
+		try {
+			System.out.println("IPv4: " + Inet4Address.getLocalHost().getHostAddress());
+			String ipv4 = Inet4Address.getLocalHost().getHostAddress().replace('.', '-');
+			System.out.println("Output IPv4: " + ipv4);
+			URL url = new URL("http://" + Constants.PUBIP + "/iplist.php?ip=" + ipv4);
+			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			con.setRequestMethod("GET");
+			BufferedReader in = new BufferedReader(
+					  new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			while ((inputLine = in.readLine()) != null) {
+				Constants.IPBOOK.add(inputLine);
+				System.out.println("HTTP GET:" + inputLine);
+			}
+			in.close();
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+
+		/*
+		 * Start the blockchain server.
+		 * */
 		Thread serverThread = new Thread(new BlockchainServer());
 		serverThread.start();
+		
+		/*
+		 * Get current trasactions and blockchain status from other devices.
+		 * */
 		for(int i = 0; i < Constants.IPBOOK.size(); i++) {
 			try {
 				Socket initSocket = new Socket();
