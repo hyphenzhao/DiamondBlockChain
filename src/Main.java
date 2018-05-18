@@ -2,6 +2,7 @@ import com.uts.DBC.common.Constants;
 import com.uts.DBC.common.HashUtils;
 import com.uts.DBC.common.RSAKeyTools;
 import com.uts.DBC.common.VerificationTools;
+import com.uts.DBC.core.CoreFunctions;
 import com.uts.DBC.data.FileIO;
 import com.uts.DBC.exceptions.TransactionInvalidException;
 import com.uts.DBC.gui.MainWindow;
@@ -50,24 +51,12 @@ public class Main {
 		 * Try to get a ip list from remote server with public ip
 		 * Register this node online
 		 * */
-		Constants.IPBOOK = new ArrayList<String>();
 		try {
 			System.out.println("IPv4: " + Inet4Address.getLocalHost().getHostAddress());
 			String ipv4 = Inet4Address.getLocalHost().getHostAddress().replace('.', '-');
 			System.out.println("Output IPv4: " + ipv4);
 			URL url = new URL("http://" + Constants.PUBIP + "/iplist.php?ip=" + ipv4);
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			con.setRequestMethod("GET");
-			BufferedReader in = new BufferedReader(
-					  new InputStreamReader(con.getInputStream()));
-			String inputLine;
-			while ((inputLine = in.readLine()) != null) {
-				if(!inputLine.equals("Connection failed.") &&
-						!inputLine.equals(ipv4))
-				Constants.IPBOOK.add(inputLine.replace('-', '.'));
-				System.out.println("HTTP GET:" + inputLine);
-			}
-			in.close();
+			CoreFunctions.refreshIPBook(url, ipv4);
 		} catch (MalformedURLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

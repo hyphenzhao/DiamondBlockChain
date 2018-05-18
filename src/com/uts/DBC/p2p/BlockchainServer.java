@@ -3,8 +3,10 @@ package com.uts.DBC.p2p;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URL;
 import java.util.ArrayList;
 
 import com.uts.DBC.common.Constants;
@@ -22,6 +24,9 @@ public class BlockchainServer implements Runnable {
 			String messageType = (String)objIn.readObject();
 			System.out.println("Server: " + messageType);
 			if(messageType.equals("GET")) {
+				String ipv4 = Inet4Address.getLocalHost().getHostAddress().replace('.', '-');
+				URL url = new URL("http://" + Constants.PUBIP + "/iplist.php?ip=" + ipv4);
+				CoreFunctions.refreshIPBook(url, ipv4);
 				CoreFunctions.multicast("both");
 			} else {
 				String message = "";

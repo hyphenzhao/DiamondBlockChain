@@ -1,10 +1,14 @@
 package com.uts.DBC.core;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.URL;
 import java.util.ArrayList;
 
 import com.uts.DBC.common.Constants;
@@ -16,6 +20,21 @@ import com.uts.DBC.model.Transaction;
 import com.uts.DBC.model.TransactionList;
 
 public class CoreFunctions {
+	public static void refreshIPBook(URL url, String ipv4) throws IOException{
+		Constants.IPBOOK = new ArrayList<String>();
+		HttpURLConnection con = (HttpURLConnection) url.openConnection();
+		con.setRequestMethod("GET");
+		BufferedReader in = new BufferedReader(
+				  new InputStreamReader(con.getInputStream()));
+		String inputLine;
+		while ((inputLine = in.readLine()) != null) {
+			if(!inputLine.equals("Connection failed.") &&
+					!inputLine.equals(ipv4))
+			Constants.IPBOOK.add(inputLine.replace('-', '.'));
+			System.out.println("HTTP GET:" + inputLine);
+		}
+		in.close();
+	}
 	public static void resolveServerInput(String messageType, ArrayList<String> message) {
 		switch(messageType) {
 		case "BLOCKCHAIN":
